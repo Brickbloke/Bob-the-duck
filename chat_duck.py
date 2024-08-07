@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify, render_template
 import os
 import google.generativeai as genai
 
+app = Flask(__name__)
+
 # Configure the API key
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
@@ -22,27 +24,24 @@ model = genai.GenerativeModel(
 )
 
 history = []
+#start of new ai gen code might cause trouble status---> unchecked
+def home():
+    return render_template('index.html')
 
-print("Quakers: what would you like to know today? Quack!!!")
-while True:
-    user_input = input("You: ")
-    
+@app.route('/ask', methods=['POST'])
+def ask():
+    user_input = request.form['question']
     if user_input.lower() == "bye":
-        print("Let’s race to a greener tomorrow!!! QUACK!! QUACK!!")
-        break
+        return jsonify({"response": "Let’s race to a greener tomorrow!!! QUACK!! QUACK!!"})
 
-    chat_session = model.start_chat(
-        history=history
-    )
-
+    chat_session = model.start_chat(history=history)
     response = chat_session.send_message(user_input)
     model_response = response.text
 
-    print(model_response)
-    print()
-
     history.append({"role": "user", "parts": [user_input]})
     history.append({"role": "bot", "parts": [model_response]})
-    
+
+    return jsonify({"response": model_response})
+#end of new ai gen code have to recheck -----> status unchecked
 if __name__ == "__main__":
     app.run(debug=True)
