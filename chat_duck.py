@@ -1,3 +1,4 @@
+from flask import Flask, request, jsonify, render_template
 import os
 import google.generativeai as genai
 
@@ -42,7 +43,6 @@ while True:
 
     history.append({"role": "user", "parts": [user_input]})
     history.append({"role": "bot", "parts": [model_response]})
-
-response = chat_session.send_message("INSERT_INPUT_HERE")
-
-print(response.text)
+    
+if __name__ == "__main__":
+    app.run(debug=True)
